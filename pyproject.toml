@@ -1,0 +1,32 @@
+# Tooling config for auto-improve.
+#
+# The loop is a single script (improve.py) you clone and run *inside* your target git
+# repo — not an installed package — so this file carries no [project]/[build-system],
+# only shared linter / test / type config so CI, pre-commit, and local runs agree.
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+# pyflakes (F), pycodestyle (E/W), isort (I), pyupgrade (UP), bugbear (B).
+select = ["E", "W", "F", "I", "UP", "B"]
+# E501 length is the formatter's job; E701/E702/E741 are the script's deliberate compact
+# style in tight parsing helpers; B008 fires on argparse defaults used on purpose.
+ignore = ["E501", "E701", "E702", "E741", "B008"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra"
+testpaths = ["tests"]
+markers = [
+    "online: hits the Gemini API; needs GEMINI_API_KEY/GOOGLE_API_KEY (deselect with -m 'not online')",
+]
+
+[tool.mypy]
+python_version = "3.9"
+files = ["improve.py"]
+# improve.py is an untyped script that imports requests lazily; don't block on strict
+# typing — tighten incrementally instead.
+ignore_missing_imports = true
+check_untyped_defs = true

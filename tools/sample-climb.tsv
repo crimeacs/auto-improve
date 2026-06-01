@@ -1,0 +1,6 @@
+iteration	commit	score	delta	status	description	timestamp
+0	42ceea4	74	+0	baseline	Original artifact	2026-06-01T14:13
+1	39711be	78	+4	keep	Time-to-Aha! / Instant Hook: Integrates the "why" (eliminating LLM slop) and the separate judge mechanism directly into the opening paragraph above the fold. [Version B explicitly addresses the core p	2026-06-01T14:13
+2	5986d74	82	+4	keep	Addresses the 'Instant Hook' weakest element by explicitly explaining the mechanics of the pairwise gate (shuffled double-blind evaluation to eliminate position bias) right in the first paragraph. [Ve	2026-06-01T14:14
+3	571b08c	86	+4	keep	Architecture & Mechanics Clarity: Detail the exact technical mechanics of how the pairwise gate shuffles orderings to neutralize LLM position bias. [Version B explains the debiasing pairwise gate mech	2026-06-01T14:14
+4	955645f	90	+4	keep	Architecture & Mechanics Clarity: Added a brief technical explanation detailing how the surgical diff engine gracefully handles, isolates, and recovers from LLM mutation and patch-application failures	2026-06-01T14:14

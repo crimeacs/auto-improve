@@ -1,0 +1,82 @@
+cff-version: 1.2.0
+message: "If you use auto-improve in your research, please cite it."
+title: auto-improve
+abstract: >-
+  A GAN-style self-improvement loop for any text artifact. It mutates a file,
+  grades each candidate with a separate judge model, runs a debiased pairwise
+  keep/discard gate in both orderings, keeps only changes that genuinely win,
+  and reverts the rest. The git branch improve/<tag> is the improvement log —
+  every commit a verified gain.
+type: software
+authors:
+  - family-names: Novoselov
+    given-names: Artemii
+    alias: crimeacs
+repository-code: "https://github.com/crimeacs/auto-improve"
+url: "https://github.com/crimeacs/auto-improve"
+license: MIT
+version: 0.1.0
+date-released: "2026-06-01"
+keywords:
+  - self-improvement
+  - llm
+  - llm-as-judge
+  - rlaif
+  - gan
+  - autoresearch
+  - prompt-optimization
+  - text-generation
+references:
+  - type: software
+    title: autoresearch
+    authors:
+      - family-names: Karpathy
+        given-names: Andrej
+    repository-code: "https://github.com/karpathy/autoresearch"
+    notes: Direct inspiration — an LLM proposing edits and judging its work in a loop.
+  - type: article
+    title: "Generative Adversarial Networks"
+    authors:
+      - family-names: Goodfellow
+        given-names: Ian J.
+      - family-names: Pouget-Abadie
+        given-names: Jean
+      - family-names: Mirza
+        given-names: Mehdi
+      - family-names: Xu
+        given-names: Bing
+      - family-names: Warde-Farley
+        given-names: David
+      - family-names: Ozair
+        given-names: Sherjil
+      - family-names: Courville
+        given-names: Aaron
+      - family-names: Bengio
+        given-names: Yoshua
+    year: 2014
+    url: "https://arxiv.org/abs/1406.2661"
+  - type: article
+    title: "RLAIF: Scaling Reinforcement Learning from Human Feedback with AI Feedback"
+    authors:
+      - family-names: Lee
+        given-names: Harrison
+      - family-names: Phatale
+        given-names: Samrat
+      - family-names: Mansoor
+        given-names: Hassan
+      - family-names: Mesnard
+        given-names: Thomas
+      - family-names: Ferret
+        given-names: Johan
+      - family-names: Lu
+        given-names: Kellie
+      - family-names: Bishop
+        given-names: Colton
+      - family-names: Hall
+        given-names: Ethan
+      - family-names: Carbune
+        given-names: Victor
+      - family-names: Rastogi
+        given-names: Abhinav
+    year: 2023
+    url: "https://arxiv.org/abs/2309.00267"

@@ -1,0 +1,60 @@
+# Dependabot — keep the supply chain current with low effort.
+# Three ecosystems cover everything in this repo: the single pip dep
+# (requests, requirements.txt at root), the Rust crates under plot/ (the
+# live climb chart — only plot/ carries a Cargo.toml; voice/ is Python and
+# is covered by the pip entry above), and the GitHub Actions used in CI.
+# Grouped, weekly, so review stays a quick skim.
+version: 2
+
+updates:
+  # Python — improve.py's one runtime dep, requests (requirements.txt at root).
+  # The voice/ variant is also Python (no extra manifest), so it rides along here.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(pip)"
+    labels:
+      - "dependencies"
+      - "python"
+    groups:
+      pip:
+        patterns:
+          - "*"
+
+  # Rust — the live climb chart (macroquad). plot/ ships its own Cargo.toml.
+  - package-ecosystem: "cargo"
+    directory: "/plot"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(cargo)"
+    labels:
+      - "dependencies"
+      - "rust"
+    groups:
+      cargo:
+        patterns:
+          - "*"
+
+  # GitHub Actions — keep CI workflow action pins current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci(actions)"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      actions:
+        patterns:
+          - "*"

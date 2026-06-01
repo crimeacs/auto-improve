@@ -1,0 +1,32 @@
+# CODEOWNERS — auto-improve
+#
+# A single maintainer owns this repo, so the rule is simple: every change
+# requests a review from @crimeacs. GitHub auto-adds the matching owner as a
+# reviewer when a PR touches the paths below. Precedence is by file order —
+# the last matching pattern wins — so the area-level lines below take effect
+# over the catch-all above them.
+#
+# Syntax: https://docs.github.com/articles/about-code-owners
+
+# Catch-all — everything in the repo is owned by the maintainer.
+*                       @crimeacs
+
+# The loop itself — the apply ladder, the pairwise gate, the climb.
+# Treat changes here as load-bearing.
+/improve.py             @crimeacs
+/requirements.txt       @crimeacs
+
+# Rubrics — the specs auto-improve optimizes against.
+/criteria/              @crimeacs
+
+# Bundled runnable examples.
+/examples/              @crimeacs
+
+# Live climb chart (Rust / macroquad).
+/plot/                  @crimeacs
+
+# Spoken-delivery variant (ElevenLabs, audio-model judge).
+/voice/                 @crimeacs
+
+# Repo governance and CI.
+/.github/               @crimeacs

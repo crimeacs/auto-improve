@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read the docs first
+    url: https://github.com/crimeacs/auto-improve#readme
+    about: Usage, flags, and the rubric guide. Most "how do I run it" questions are answered here.
+  - name: Report a security vulnerability (privately)
+    url: https://github.com/crimeacs/auto-improve/security/advisories/new
+    about: Never open a public issue for security. Use a private GitHub Security Advisory. Keys are env-only — never paste an API key here.

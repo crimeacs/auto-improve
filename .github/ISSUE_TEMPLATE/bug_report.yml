@@ -1,0 +1,118 @@
+name: Bug report
+description: Something in the improve loop misbehaves — bad apply, judge errors, climb stalls, crashes.
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The more reproducible the better — a tag plus the
+        `--status` table tells us most of what we need.
+
+        Secrets are env-only. Never paste your `GEMINI_API_KEY` / `GOOGLE_API_KEY`
+        or any other key into this form.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I'm on the latest `main`.
+          required: true
+        - label: I searched existing issues and didn't find a duplicate.
+          required: true
+        - label: My artifact lives inside a git repo (keeps/discards are git checkpoints).
+          required: true
+        - label: This report contains no API keys or other secrets.
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What went wrong, and what you expected instead.
+      placeholder: |
+        Expected the candidate to apply as a surgical diff; instead the run crashed at [Iter 2].
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: The exact `improve.py` invocation. Redact nothing but secrets (there shouldn't be any here).
+      render: shell
+      placeholder: |
+        python3 improve.py --artifact examples/cold-email.txt \
+                           --criteria criteria/cold-email-quality.md --tag email
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output / traceback
+      description: The relevant terminal output. A full Python traceback is ideal. Pasted as code automatically.
+      render: text
+      placeholder: |
+        [Baseline] Score: 48/100
+        [Iter 1] [KEEP] ...
+        Traceback (most recent call last):
+          ...
+    validations:
+      required: true
+  - type: input
+    id: status-table
+    attributes:
+      label: Status table
+      description: Output of `python3 improve.py --status --tag <NAME>`, if the run produced a results table.
+      placeholder: "python3 improve.py --status --tag email"
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      description: Where does the bug live?
+      options:
+        - Diff apply (apply_diff / _parse_candidates)
+        - Mutation (candidate generation)
+        - Scoring / pairwise judge
+        - Rubric inference (--goal / inferred criteria)
+        - Git branch / commit handling
+        - CLI args / --status
+        - plot/ (Rust live chart)
+        - voice/ (ElevenLabs TTS variant)
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      description: "`python3 --version` (3.9+ required)."
+      placeholder: "Python 3.11.6"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "macOS 14.5 / Ubuntu 22.04 / Windows 11"
+    validations:
+      required: true
+  - type: input
+    id: models
+    attributes:
+      label: Models (mutator / evaluator)
+      description: Only if you overrode `IMPROVE_MUTATOR` / `IMPROVE_EVALUATOR` from the defaults.
+      placeholder: "gemini-flash-latest / gemini-flash-latest"
+    validations:
+      required: false
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro
+      description: Steps to reproduce. Bonus if it reproduces on a bundled `examples/` artifact.
+      placeholder: |
+        1. Run the command above on examples/api-design.py
+        2. ...
+        3. Crash at [Iter N]
+    validations:
+      required: false

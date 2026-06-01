@@ -1,0 +1,27 @@
+# Pre-commit hooks for auto-improve.
+# Catch lint/format failures locally before they ever reach CI.
+#
+#   pip install pre-commit
+#   pre-commit install            # run automatically on every `git commit`
+#   pre-commit run --all-files    # check the whole tree once
+#
+# Hooks pin to a tagged rev for reproducibility; bump with `pre-commit autoupdate`.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      # Lint, with autofix. Targets Python 3.9+ (see requirements.txt: only `requests`).
+      # No ruff-format hook — improve.py uses a deliberate compact style (aligned
+      # comments, tight one-liners) we don't want auto-reformatted.
+      - id: ruff
+        args: [--fix]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files

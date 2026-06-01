@@ -1,0 +1,80 @@
+name: Feature request / new artifact type
+description: Propose a capability, a new bundled artifact type, or a rubric improvement
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make the loop better. auto-improve climbs **any text artifact** —
+        emails, prompts, READMEs, API designs, blog posts. Tell us what you want it to do, and
+        what "better" means so the judge can grade it honestly.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's missing
+      description: The gap or friction. What can't the loop do today that it should?
+      placeholder: "I want to improve <X>, but ..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should happen. If it touches the CLI, sketch the command.
+      placeholder: "python3 improve.py --artifact ... --tag ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part does this touch?
+      multiple: true
+      options:
+        - improve.py (the loop)
+        - Rubric inference / criteria
+        - Diff apply ladder (_parse_candidates / apply_diff)
+        - examples/ (new bundled artifact)
+        - criteria/ (new or improved rubric)
+        - plot/ (Rust live chart)
+        - voice/ (ElevenLabs variant)
+        - Docs (README / SKILL.md)
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: artifact-type
+    attributes:
+      label: New artifact type (if proposing one)
+      description: The kind of text you'd want a bundled example + rubric for.
+      placeholder: "e.g. SQL migration, changelog entry, system prompt"
+    validations:
+      required: false
+  - type: textarea
+    id: success
+    attributes:
+      label: How would we know it worked?
+      description: >
+        Since every kept commit must be a verified win, define "better" for this feature.
+        For a new artifact type, what would the rubric reward?
+      placeholder: "A kept change is one that ... ; the rubric should reward ..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you tried, or other approaches you weighed.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you file
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true
+        - label: This is a feature request, not a bug report or a question.
+          required: true
+        - label: I'm not pasting any API keys, secrets, or private artifact contents.
+          required: true

@@ -4,6 +4,14 @@
 
 # auto-improve
 
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+  <img src="https://img.shields.io/badge/python-3.9%2B-blue.svg" alt="Python 3.9+" />
+  <a href="https://github.com/crimeacs/auto-improve/actions/workflows/ci.yml"><img src="https://github.com/crimeacs/auto-improve/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href=".github/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome" /></a>
+  <img src="https://img.shields.io/badge/powered%20by-Gemini-8E75B2?style=flat" alt="Powered by Gemini" />
+</p>
+
 **A GAN-style self-improvement loop for any text artifact.** Point it at a file —
 **bring a rubric, or let auto-improve write one from the artifact.** It then mutates the
 file, grades each candidate with a **strict, independent judge model**, then filters them through a **debiased pairwise gate** (where candidate and champion are evaluated head-to-head in shuffled orderings to eliminate position bias). It keeps only the changes that genuinely win, and reverts the rest. By evaluating candidate mutations against this strict double-blind filter, auto-improve eliminates the "LLM slop" of unverified rewrites. The git history becomes the improvement log — every commit is a verified gain.
@@ -123,6 +131,24 @@ Anchors: 50 = average, 70 = good, 90+ = exceptional. Reward craft, not length.
 - <what earns the points> (0-X)
 ```
 
+## Going further
+
+The loop is more general than "improve one file":
+
+- **Improve the artifact, or the generator that makes it.** Point `--artifact` at the
+  *output* (a draft, a landing page) — or at the *thing that produces it*: a prompt
+  template, a function, a config. Improving the generator compounds, because every
+  artifact it produces next starts better.
+- **When it plateaus, improve the rubric.** A rubric is just text, so run auto-improve on
+  it too — tighten vague dimensions, fix mis-weighted points, then re-run the artifact
+  against the sharper rubric. The improver and the spec climb in turns.
+- **Source the rubric instead of writing it.** Infer it from the artifact (`--goal`), or
+  extract one from a style guide, a spec, or a book — anything that encodes "what good
+  looks like" can become the bar.
+
+It won't take a weak idea "to the moon," but it reliably grinds down the obvious slop and
+the clearly-worse choices — automatically, and every step stays a verified gain.
+
 ## Bundled examples
 
 Runnable examples — point `--artifact`/`--criteria` at a pair and watch it climb:
@@ -147,6 +173,10 @@ that reads well *and* lands when spoken.
 A tiny [macroquad](https://macroquad.rs) app in [`plot/`](plot/) renders a run **live** —
 score vs iteration, green keeps / red resets / gold retries — and re-reads the TSV as the
 loop runs, so you watch the climb build in real time.
+
+<p align="center">
+  <img src="assets/demo.gif" alt="A run climbing 74 → 90 over five iterations; kept steps in green." width="88%" />
+</p>
 
 ```bash
 cd plot && cargo build --release

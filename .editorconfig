@@ -1,0 +1,46 @@
+# auto-improve — editor-agnostic formatting baseline.
+# https://editorconfig.org
+# One consistent shape across the Python/Rust/Markdown tree, so diffs stay
+# about the change, not the whitespace. Every kept commit on improve/<tag>
+# should read as a real gain — not an indentation churn.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Python — improve.py and the offline-testable core. 4-space, PEP 8.
+[*.py]
+indent_style = space
+indent_size = 4
+
+# Rust — the optional plot/ live climb chart (macroquad).
+[*.rs]
+indent_style = space
+indent_size = 4
+
+# Markdown — README.md, SKILL.md, criteria/*.md rubrics.
+# Trailing whitespace can be a hard line break, so leave it alone here.
+[*.md]
+trim_trailing_whitespace = false
+
+# TOML — plot/Cargo.toml (the macroquad climb chart).
+[*.toml]
+indent_size = 4
+
+# YAML / JSON / shell — 2-space is the common idiom (e.g. the CI workflow).
+[*.{sh,json,yml,yaml}]
+indent_size = 2
+
+# requirements.txt — the single runtime dependency (requests). Don't reflow it.
+[requirements.txt]
+trim_trailing_whitespace = false
+
+# Makefiles require real tabs.
+[Makefile]
+indent_style = tab
