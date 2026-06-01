@@ -59,7 +59,7 @@ for each iteration:
 ## Install
 
 ```bash
-git clone https://github.com/<you>/auto-improve && cd auto-improve
+git clone https://github.com/crimeacs/auto-improve && cd auto-improve
 pip install requests
 export GEMINI_API_KEY=...        # free key: https://aistudio.google.com/apikey
 ```

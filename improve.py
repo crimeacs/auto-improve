@@ -266,6 +266,12 @@ Output EXACTLY {n} candidates in this format (no prose between them):
     return _parse_candidates(response.strip())
 
 
+# The mutate-block delimiters. If one ends up inside a captured FIND or REPLACE, the
+# block was ambiguous (the model echoed a marker, or the artifact itself contains the
+# token) — splicing it would corrupt the file, so we drop that candidate.
+_DELIMS = ("---FIND---", "---REPLACE---", "---DESCRIPTION---", "===CANDIDATE")
+
+
 def _parse_candidates(text):
     """Parse the ===CANDIDATE n=== blocks. Backward-compatible: a single
     un-delimited FIND/REPLACE block parses as one candidate."""
@@ -275,8 +281,11 @@ def _parse_candidates(text):
         rm = re.search(r'---REPLACE---\s*\n(.*?)\n---DESCRIPTION---', block, re.DOTALL)
         dm = re.search(r'---DESCRIPTION---\s*\n(.*?)(?=\n===|\Z)', block, re.DOTALL)
         if fm and rm and fm.group(1).strip():
+            find, replace = fm.group(1).strip(), rm.group(1).strip()
+            if any(d in find or d in replace for d in _DELIMS):
+                continue  # ambiguous block — never splice a delimiter into the artifact
             desc = dm.group(1).strip().split("\n")[0] if dm else "no description"
-            out.append((fm.group(1).strip(), rm.group(1).strip(), desc))
+            out.append((find, replace, desc))
     return out
 
 
@@ -290,6 +299,9 @@ def apply_diff(content, find_text, replace_text):
     (None, reason) instead of crashing or corrupting the file."""
     if not find_text:
         return None, "empty-find"
+    # belt-and-suspenders: never introduce a parser delimiter that wasn't already there
+    if any(d in replace_text and d not in content for d in _DELIMS):
+        return None, "delimiter-in-replace"
     if find_text in content:                                   # 1) exact
         return content.replace(find_text, replace_text, 1), "exact"
     cfind = _canon(find_text)                                  # 2) canonicalized
