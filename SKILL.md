@@ -21,11 +21,14 @@ definitions, blog posts, cover letters, docs, contracts, menus.
 export GEMINI_API_KEY=...        # https://aistudio.google.com/apikey
 python3 improve.py \
   --artifact path/to/file.md \   # must be inside a git repo
-  --criteria path/to/rubric.md \ # weighted dimensions summing to 100 (see criteria/)
   --tag v1 \                     # → branch improve/v1, results/v1.tsv
-  --max-iterations 8
+  --max-iterations 8 \
+  --criteria path/to/rubric.md   # OPTIONAL — omit to auto-infer a rubric; or add
+                                 # --goal "what good looks like" to steer the inferred one
 ```
 
+If you don't pass `--criteria`, auto-improve writes a rubric from the artifact first and
+saves it to `results/<tag>.rubric.md` — read it to see what it's optimizing for.
 Check a finished run: `python3 improve.py --status --tag v1`.
 The result lives on the `improve/<tag>` git branch — `git diff main improve/v1 -- <file>`.
 

@@ -1,12 +1,14 @@
 # auto-improve
 
-**A GAN-style self-improvement loop for any text artifact.** Point it at a file and a
-rubric; it mutates the file, grades the result with a *separate* model, keeps only the
-changes that genuinely win, and reverts the rest. The git history becomes the
-improvement log — every commit is a verified gain.
+**A GAN-style self-improvement loop for any text artifact.** Point it at a file —
+**bring a rubric, or let auto-improve write one from the artifact.** It then mutates the
+file, grades the result with a *separate* model, keeps only the changes that genuinely
+win, and reverts the rest. The git history becomes the improvement log — every commit is
+a verified gain.
 
-Works on anything text: emails, landing pages, prompts, READMEs, contracts, menus,
-agent skills, blog posts, cover letters. Inspired by Karpathy's autoresearch.
+Works on anything text: emails, landing pages, prompts, READMEs, API designs, configs,
+blog posts, cover letters. Don't have a rubric? Pass a one-line `--goal` (or nothing) and
+it infers the right criteria first. Inspired by Karpathy's autoresearch.
 
 ```text
 $ python3 improve.py --artifact examples/cold-email.txt \
@@ -75,11 +77,12 @@ git log --oneline improve/email          # the improvement trail
 git diff main improve/email -- examples/cold-email.txt
 ```
 
-Then point it at your own file:
+Or skip the rubric entirely — describe the goal and it writes the criteria first:
 
 ```bash
-python3 improve.py --artifact path/to/your/file.md \
-                   --criteria criteria/your-rubric.md --tag v1 --max-iterations 8
+python3 improve.py --artifact path/to/your/file.md --tag v1 \
+                   --goal "a landing hero that makes a developer try the product"
+# → [Rubric] inferred from the artifact (saved to results/v1.rubric.md), then it climbs
 ```
 
 > The artifact must live inside a **git repo** — that's how keeps and discards are
@@ -88,10 +91,12 @@ python3 improve.py --artifact path/to/your/file.md \
 ## Usage
 
 ```
-improve.py --artifact FILE --criteria RUBRIC.md --tag NAME [options]
+improve.py --artifact FILE --tag NAME [--criteria RUBRIC.md] [options]
 
   --artifact        file to improve (inside a git repo)
-  --criteria        markdown rubric, dimensions totaling 100 (see criteria/)
+  --criteria        markdown rubric, dimensions totaling 100 (see criteria/).
+                    OPTIONAL — omit it and a rubric is inferred from the artifact.
+  --goal            one-line intent to steer the auto-generated rubric (optional)
   --tag             run id → git branch improve/<tag>, results/<tag>.tsv
   --max-iterations  default 10
   --candidates      candidate edits per round (best-of-N), default 3
@@ -100,10 +105,13 @@ improve.py --artifact FILE --criteria RUBRIC.md --tag NAME [options]
   --status          show a finished run's results table
 ```
 
-## Writing a rubric
+## The rubric (optional)
 
-A rubric is a markdown file with weighted dimensions that sum to 100. See
-[`criteria/README.md`](criteria/README.md) for the full guide and
+The rubric is the spec auto-improve optimizes against. You don't have to write one —
+omit `--criteria` and it infers a rubric from the artifact first (steer it with
+`--goal`, and inspect the result it saves to `results/<tag>.rubric.md`). **Bring your
+own when you want control**: a rubric is a markdown file with weighted dimensions that
+sum to 100. See [`criteria/README.md`](criteria/README.md) for the full guide and
 [`criteria/cold-email-quality.md`](criteria/cold-email-quality.md) for a worked example.
 
 ```markdown
