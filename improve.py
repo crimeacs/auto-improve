@@ -439,10 +439,49 @@ def show_status(tag):
 
 # ── MAIN LOOP ─────────────────────────────────────────────────────────────
 
+def generate_rubric(artifact_content, goal=None):
+    """Infer a quality rubric for an artifact when the user didn't supply one.
+    Returns markdown (weighted dimensions summing to 100), or None on failure."""
+    goal_line = f"\nThe author's goal for it: {goal}\n" if goal else ""
+    prompt = f"""You are an expert editor. Read the artifact below, decide what KIND of
+thing it is (email, code/API, blog post, prompt, spec, config, etc.) and what
+"excellent" means for that kind, then write the QUALITY RUBRIC a great version would be
+judged against.
+{goal_line}
+Output ONLY a markdown rubric in EXACTLY this shape — no preamble, no code fence:
+
+# <Artifact Type> — Quality Criteria
+
+Anchors: 50 = average, 70 = good, 90+ = exceptional. Reward craft, not length.
+
+## Dimensions (total: 100)
+
+### <Dimension> (N points)
+- <a specific thing that earns the points> (0-X)
+
+Rules: 5-7 dimensions; the point values in the "### (N points)" headings MUST sum to
+exactly 100; each dimension specific, independent, and reward-framed ("award N when
+X"); tailored to THIS artifact, not generic boilerplate.
+
+## ARTIFACT
+{artifact_content[:6000]}"""
+    out = llm_call(prompt, temperature=0.4)
+    if not out:
+        return None
+    out = out.strip()
+    if out.startswith("```"):
+        out = re.sub(r"^```[a-zA-Z]*\s*", "", out)
+        out = re.sub(r"\s*```\s*$", "", out).strip()
+    return out
+
+
 def main():
     parser = argparse.ArgumentParser(description="Auto-Improve v2: Informed GAN-style improvement")
     parser.add_argument("--artifact", help="Path to file to improve")
-    parser.add_argument("--criteria", help="Path to evaluation rubric (.md)")
+    parser.add_argument("--criteria", help="Path to evaluation rubric (.md). Optional — "
+                        "if omitted, auto-improve infers one from the artifact.")
+    parser.add_argument("--goal", help="Optional one-line intent to steer the auto-generated "
+                        'rubric, e.g. "a cold email that books a meeting"')
     parser.add_argument("--tag", required=True, help="Run identifier (branch: improve/<tag>)")
     parser.add_argument("--max-iterations", type=int, default=10)
     parser.add_argument("--threshold", type=int, default=90)
@@ -456,11 +495,11 @@ def main():
         show_status(args.tag)
         return
 
-    if not args.artifact or not args.criteria:
-        parser.error("--artifact and --criteria required")
+    if not args.artifact:
+        parser.error("--artifact required")
 
     artifact_path = os.path.abspath(args.artifact)
-    criteria_path = os.path.abspath(args.criteria)
+    criteria_path = os.path.abspath(args.criteria) if args.criteria else None
     repo_root = os.path.dirname(artifact_path)
 
     # Walk up to find git root
@@ -495,11 +534,24 @@ def main():
         git("add -A")
         git(f"checkout -b {branch}")
 
-    # ── Baseline ──
-    print("[Baseline] Evaluating (2x averaged)...")
-    criteria = read_file(criteria_path)
+    # ── Criteria: use the provided rubric, or infer one from the artifact ──
     artifact = read_file(artifact_path)
+    if criteria_path:
+        criteria = read_file(criteria_path)
+    else:
+        print("[Rubric] No --criteria given; inferring one from the artifact...")
+        criteria = generate_rubric(artifact, args.goal)
+        if not criteria:
+            parser.error("could not auto-generate a rubric — check the API key, or pass --criteria")
+        rubric_out = os.path.join(RESULTS_DIR, f"{args.tag}.rubric.md")
+        write_file(rubric_out, criteria)
+        print(f"[Rubric] Generated (saved to {os.path.relpath(rubric_out, repo_root)}):\n")
+        for ln in criteria.splitlines()[:16]:
+            print("    " + ln)
+        print()
 
+    # ── Baseline ──
+    print("[Baseline] Evaluating...")
     baseline_score, baseline_breakdown = evaluate(artifact, criteria, runs=args.eval_runs)
     print(f"[Baseline] Score: {baseline_score}/100")
 
