@@ -1,0 +1,12 @@
+[package]
+name = "auto-improve-plot"
+version = "0.1.0"
+edition = "2024"
+description = "Live climb plot for auto-improve runs (reads results/<tag>.tsv)"
+
+[dependencies]
+macroquad = "0.4.15"
+
+[[bin]]
+name = "plot"
+path = "src/main.rs"

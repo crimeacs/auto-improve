@@ -142,6 +142,20 @@ text-to-speech voice + settings (and inline emotion tags), renders a clip, and a
 [`voice/`](voice/) (needs an ElevenLabs key). Run it alongside the text loop for a note
 that reads well *and* lands when spoken.
 
+## Watch it climb (Rust plot)
+
+A tiny [macroquad](https://macroquad.rs) app in [`plot/`](plot/) renders a run **live** —
+score vs iteration, green keeps / red resets / gold retries — and re-reads the TSV as the
+loop runs, so you watch the climb build in real time.
+
+```bash
+cd plot && cargo build --release
+./target/release/plot ../results/<tag>.tsv     # or pass a dir to auto-pick the latest run
+```
+
+Run `improve.py` in one terminal and the plot in another to watch it climb. Headless check
+(no window): `./target/release/plot --dump ../results/<tag>.tsv`.
+
 ## Configuration
 
 | env var | default | purpose |

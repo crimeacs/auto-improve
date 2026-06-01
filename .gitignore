@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 *.mp3
 .DS_Store
+target/
