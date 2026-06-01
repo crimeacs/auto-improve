@@ -125,6 +125,22 @@ async fn main() {
     }
 }
 
+/// Truncate `s` to fit within `max_w` px at font size `fs`, adding an ellipsis if cut.
+fn fit_text(s: &str, fs: u16, max_w: f32) -> String {
+    if measure_text(s, None, fs, 1.0).width <= max_w {
+        return s.to_string();
+    }
+    let mut out = String::new();
+    for ch in s.chars() {
+        if measure_text(&format!("{out}{ch}…"), None, fs, 1.0).width > max_w {
+            break;
+        }
+        out.push(ch);
+    }
+    out.push('…');
+    out
+}
+
 fn draw_climb(c: &Climb, t: f32) {
     let (sw, sh) = (screen_width(), screen_height());
     draw_text("auto-improve", 36.0, 46.0, 30.0, INK);
@@ -177,8 +193,8 @@ fn draw_climb(c: &Climb, t: f32) {
         "baseline" => ("START", ACCENT), _ => ("DONE", GREEN),
     };
     draw_text(badge, x0, sh - 38.0, 18.0, bc);
-    let maxc = ((sw - 170.0) / 8.5).max(10.0) as usize;
-    let desc: String = last.desc.chars().take(maxc).collect();
-    draw_text(&desc, x0 + 66.0, sh - 38.0, 16.0, INK);
+    let dx = x0 + 66.0;
+    let desc = fit_text(&last.desc, 16, sw - 24.0 - dx);   // measure + ellipsis, never overflow
+    draw_text(&desc, dx, sh - 38.0, 16.0, INK);
     draw_text("green keep · red reset · gold retry        Esc quit", x0, sh - 14.0, 13.0, DIM);
 }

@@ -2,13 +2,11 @@
 
 **A GAN-style self-improvement loop for any text artifact.** Point it at a file —
 **bring a rubric, or let auto-improve write one from the artifact.** It then mutates the
-file, grades the result with a *separate* model, keeps only the changes that genuinely
-win, and reverts the rest. The git history becomes the improvement log — every commit is
-a verified gain.
+file, grades each candidate with a **strict, independent judge model**, then filters them through a **debiased pairwise gate** (where candidate and champion are evaluated head-to-head in shuffled orderings to eliminate position bias). It keeps only the changes that genuinely win, and reverts the rest. By evaluating candidate mutations against this strict double-blind filter, auto-improve eliminates the "LLM slop" of unverified rewrites. The git history becomes the improvement log — every commit is a verified gain.
 
 Works on anything text: emails, landing pages, prompts, READMEs, API designs, configs,
 blog posts, cover letters. Don't have a rubric? Pass a one-line `--goal` (or nothing) and
-it infers the right criteria first. Inspired by Karpathy's autoresearch.
+it infers the right criteria first. Inspired by Karpathy's [autoresearch](https://github.com/karpathy/autoresearch) — see [Lineage](#lineage).
 
 ```text
 $ python3 improve.py --artifact examples/cold-email.txt \
@@ -34,9 +32,7 @@ and you can't tell if it actually got better. auto-improve fixes that with two r
 
 1. **A separate judge.** The model that *mutates* never *grades* — grading is a fresh
    call against your rubric, so it can't grade its own homework.
-2. **A pairwise keep/discard gate.** Each change is A/B'd against the current champion
-   (both orderings, to debias position) and **kept only if it genuinely wins**.
-   Confident-but-worse rewrites get reverted, not shipped.
+2. **A pairwise keep/discard gate.** Each candidate is evaluated head-to-head against the current champion. To eliminate position bias (where LLMs favor the first option), the judge evaluates two shuffled prompts in parallel: `[Candidate, Champion]` and `[Champion, Candidate]`. A mutation is **kept only if it wins both evaluations** (a strict 2-0 sweep). Confident-but-worse rewrites get reverted, not shipped.
 
 The result is a monotonic climb you can trust — and a git branch where every commit is
 a real improvement, fully diffable.
@@ -52,7 +48,7 @@ for each iteration:
 ```
 
 - **Surgical diffs, not rewrites** — a crash-proof apply ladder (exact → unicode-canon
-  → fuzzy) means a malformed edit is skipped, never corrupts the file.
+  → fuzzy) means a malformed edit is skipped, never corrupts the file. If an LLM-proposed patch fails to apply or corrupts syntax, the diff engine catches the exception, logs the failure, discards the malformed candidate, and falls back to evaluating the remaining intact candidates in the Best-of-N pool.
 - **Best-of-N** — N candidates per round, so one bad draw doesn't stall the climb.
 - **The git history is the artifact** — `git log improve/<tag>` is your improvement trail.
 
@@ -165,6 +161,21 @@ Run `improve.py` in one terminal and the plot in another to watch it climb. Head
 | `IMPROVE_EVALUATOR` | `gemini-flash-latest` | model that grades + judges |
 | `RESULTS_DIR` | `./results` | where `<tag>.tsv` climb logs are written |
 | `IMPROVE_EVENTS_LOG` | — | optional path to append run events as JSONL |
+
+## Lineage
+
+auto-improve sits where three ideas meet:
+
+- **[karpathy/autoresearch](https://github.com/karpathy/autoresearch)** — the direct
+  inspiration: an LLM proposing edits and judging its own work in a loop.
+- **GANs** ([Goodfellow et al., 2014](https://arxiv.org/abs/1406.2661)) — a *generator*
+  (the mutator) and a *discriminator* (the separate judge) held in tension: the mutator
+  tries to produce changes the judge will accept, the judge keeps it honest. Here the
+  trained artifact isn't a network — it's the git branch.
+- **RL from AI feedback** ([RLAIF, Lee et al., 2023](https://arxiv.org/abs/2309.00267)) —
+  read each iteration as one policy-improvement step whose reward is an *AI judge's*
+  pairwise preference rather than a human's. The keep/discard gate is the reward model;
+  "keep iff it wins" is the update.
 
 ## License
 
