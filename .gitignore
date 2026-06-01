@@ -1,0 +1,5 @@
+results/
+out/
+__pycache__/
+*.pyc
+*.mp3

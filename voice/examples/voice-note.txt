@@ -1,0 +1,1 @@
+Quick thought on why most onboarding flows fail. People don't read — they scan, and then they bail. So the first screen shouldn't explain your product; it should get someone to one small win in under a minute. Show the value before you ask for anything. The teams that nail this don't have better features. They just respect that attention is the scarcest thing in the room.
