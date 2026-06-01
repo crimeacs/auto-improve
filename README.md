@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="auto-improve — AI that gets better. Automatically. A live climb from 68 to 76 (+11.8%)." />
+</p>
+
 # auto-improve
 
 **A GAN-style self-improvement loop for any text artifact.** Point it at a file —
