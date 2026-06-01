@@ -10,15 +10,14 @@ Usage:
 """
 
 import argparse
+import datetime
+import difflib
 import json
 import os
+import re
 import subprocess
 import sys
 import time
-import datetime
-import re
-import textwrap
-import difflib
 import unicodedata
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -201,7 +200,7 @@ Return ONLY valid JSON:
     try:
         data = json.loads(text)
         return int(data.get("total_score", 0)), json.dumps(data, indent=2)
-    except:
+    except Exception:
         m = re.search(r'"total_score"\s*:\s*(\d+)', text)
         if m:
             return int(m.group(1)), text
@@ -440,11 +439,11 @@ def show_status(tag):
         parts = l.strip().split("\t")
         if len(parts) >= 3:
             try: scores.append(int(parts[2]))
-            except: pass
+            except Exception: pass
     best = max(scores) if scores else 0
     print(f"Iterations: {len(lines)-1} | Keeps: {keeps} | Discards: {discards} | Crashes: {crashes}")
     print(f"Best score: {best}")
-    print(f"\nResults:")
+    print("\nResults:")
     for l in lines:
         print(f"  {l.strip()}")
 
@@ -528,15 +527,15 @@ def main():
     branch = f"improve/{args.tag}"
     rel_path = os.path.relpath(artifact_path, repo_root)
 
-    print(f"╔══════════════════════════════════════════════╗")
-    print(f"║      AUTO-IMPROVE v2 (Informed GAN Loop)     ║")
-    print(f"╠══════════════════════════════════════════════╣")
+    print("╔══════════════════════════════════════════════╗")
+    print("║      AUTO-IMPROVE v2 (Informed GAN Loop)     ║")
+    print("╠══════════════════════════════════════════════╣")
     print(f"║ Artifact:  {rel_path[:34]:<34s} ║")
     print(f"║ Branch:    {branch[:34]:<34s} ║")
     print(f"║ Eval runs: {args.eval_runs:<34d} ║")
     print(f"║ Max iters: {args.max_iterations:<34d} ║")
     print(f"║ Threshold: {args.threshold:<34d} ║")
-    print(f"╚══════════════════════════════════════════════╝\n")
+    print("╚══════════════════════════════════════════════╝\n")
 
     # ── Setup branch ──
     existing = git(f"branch --list {branch}")
@@ -576,7 +575,7 @@ def main():
             print(f"  {dim_name}: {s}/{m}")
         if bd.get("top_improvement"):
             print(f"  → Top improvement: {bd['top_improvement']}")
-    except:
+    except Exception:
         pass
 
     commit = git("rev-parse --short HEAD")
@@ -604,7 +603,7 @@ def main():
         cands = mutate_candidates(artifact, criteria, last_breakdown,
                                   results_history, n=args.candidates)
         if not cands:
-            print(f"[Mutate] FAILED: no candidates parsed/generated")
+            print("[Mutate] FAILED: no candidates parsed/generated")
             log_result(results_file, i, "-------", current_score, 0, "crash",
                        "Mutation gen failed")
             consecutive_discards += 1
@@ -626,7 +625,7 @@ def main():
             applicable.append((new_content, how, description))
 
         if not applicable:
-            print(f"[Apply] No candidate applied cleanly.")
+            print("[Apply] No candidate applied cleanly.")
             log_result(results_file, i, "-------", current_score, 0, "crash",
                        "No candidate applied")
             consecutive_discards += 1
@@ -641,7 +640,6 @@ def main():
             scored = list(ex.map(_score_candidate, applicable))
         for (_c, ns, _nb, desc, how) in scored:
             print(f"  [cand] {how:5s} score={ns} : {desc[:60]}")
-        applied = len(scored)
         best = max(scored, key=lambda x: x[1])
         new_content, new_score, new_breakdown, description, how = best
 
