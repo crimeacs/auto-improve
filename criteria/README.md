@@ -40,5 +40,6 @@ under them. Keep the point values in the headings summing to 100.
 - [`cold-email-quality.md`](cold-email-quality.md) — outreach email
 - [`blog-post-quality.md`](blog-post-quality.md) — short blog post / essay
 - [`prompt-quality.md`](prompt-quality.md) — LLM system prompt
+- [`api-design-quality.md`](api-design-quality.md) — a function's public interface (the hard one)
 
 Copy one, swap the dimensions for your artifact, point `--criteria` at it.

@@ -117,13 +117,14 @@ Anchors: 50 = average, 70 = good, 90+ = exceptional. Reward craft, not length.
 
 ## Bundled examples
 
-Three runnable text examples — point `--artifact`/`--criteria` at a pair and watch it climb:
+Runnable examples — point `--artifact`/`--criteria` at a pair and watch it climb:
 
-| artifact | rubric |
-|---|---|
-| `examples/cold-email.txt` | `criteria/cold-email-quality.md` |
-| `examples/blog-post.md`   | `criteria/blog-post-quality.md` |
-| `examples/prompt.txt`     | `criteria/prompt-quality.md` |
+| artifact | rubric | |
+|---|---|---|
+| `examples/cold-email.txt` | `criteria/cold-email-quality.md` | |
+| `examples/blog-post.md`   | `criteria/blog-post-quality.md` | |
+| `examples/prompt.txt`     | `criteria/prompt-quality.md` | |
+| `examples/api-design.py`  | `criteria/api-design-quality.md` | ← the hard one: a footgun-ridden function interface → a clean, hard-to-misuse API |
 
 ## Voice notes — improve spoken *delivery*
 
