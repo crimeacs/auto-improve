@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="700" viewBox="0 0 860 700" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace" font-size="13">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c2128"/>
+      <stop offset="1" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+  <!-- window -->
+  <rect x="8" y="8" width="844" height="684" rx="12" fill="url(#bg)" stroke="#30363d" stroke-width="1"/>
+  <!-- title bar -->
+  <rect x="8" y="8" width="844" height="34" rx="12" fill="#21262d"/>
+  <rect x="8" y="30" width="844" height="12" fill="#21262d"/>
+  <circle cx="30" cy="25" r="6" fill="#ff5f57"/>
+  <circle cx="50" cy="25" r="6" fill="#febc2e"/>
+  <circle cx="70" cy="25" r="6" fill="#28c840"/>
+  <text x="430" y="29" text-anchor="middle" fill="#8b949e" font-size="12">auto-improve — пример запуска (mockup)</text>
+
+  <g fill="#c9d1d9">
+    <!-- command -->
+    <text x="28" y="66"><tspan fill="#7ee787">$</tspan> python3 improve.py --artifact examples/cold-email.txt \</text>
+    <text x="28" y="84"><tspan fill="#161b22">$ </tspan>                     --criteria criteria/cold-email-quality.md --tag email</text>
+
+    <!-- banner box -->
+    <text x="28" y="114" fill="#79c0ff">╔══════════════════════════════════════════════╗</text>
+    <text x="28" y="132" fill="#79c0ff">║      AUTO-IMPROVE v2 (Informed GAN Loop)     ║</text>
+    <text x="28" y="150" fill="#79c0ff">╠══════════════════════════════════════════════╣</text>
+    <text x="28" y="168" fill="#79c0ff">║<tspan fill="#c9d1d9"> Artifact:  examples/cold-email.txt           </tspan>║</text>
+    <text x="28" y="186" fill="#79c0ff">║<tspan fill="#c9d1d9"> Branch:    improve/email                     </tspan>║</text>
+    <text x="28" y="204" fill="#79c0ff">║<tspan fill="#c9d1d9"> Eval runs: 2                                 </tspan>║</text>
+    <text x="28" y="222" fill="#79c0ff">║<tspan fill="#c9d1d9"> Max iters: 10                                </tspan>║</text>
+    <text x="28" y="240" fill="#79c0ff">║<tspan fill="#c9d1d9"> Threshold: 90                                </tspan>║</text>
+    <text x="28" y="258" fill="#79c0ff">╚══════════════════════════════════════════════╝</text>
+
+    <!-- baseline -->
+    <text x="28" y="288"><tspan fill="#d2a8ff">[Baseline]</tspan> Evaluating...</text>
+    <text x="28" y="306"><tspan fill="#d2a8ff">[Baseline]</tspan> Score: <tspan fill="#f0883e" font-weight="bold">48/100</tspan></text>
+    <text x="28" y="324" fill="#8b949e">  Hook &amp; Relevance: 9/25</text>
+    <text x="28" y="342" fill="#8b949e">  Specificity &amp; Proof: 8/25</text>
+    <text x="28" y="360" fill="#8b949e">  → Top improvement: the opener is generic — name the reader's real problem</text>
+
+    <!-- iter 1 -->
+    <text x="28" y="390" fill="#30363d">══════════════════════════════════════════════════</text>
+    <text x="28" y="408"><tspan fill="#79c0ff">[Iter 1/10]</tspan> Score: 48</text>
+    <text x="28" y="426"><tspan fill="#d2a8ff">[Mutate]</tspan> Generating 3 candidate diffs...</text>
+    <text x="28" y="444" fill="#8b949e">  [cand] exact score=52 : specific hook beats the generic opener</text>
+    <text x="28" y="462" fill="#8b949e">  [cand] exact score=49 : tighten the CTA to a single question</text>
+    <text x="28" y="480"><tspan fill="#3fb950" font-weight="bold">[KEEP]</tspan> pairwise: candidate wins 2-0 — hook names a real pain <tspan fill="#3fb950">(48-&gt;52)</tspan></text>
+
+    <!-- iter 2 -->
+    <text x="28" y="510" fill="#30363d">══════════════════════════════════════════════════</text>
+    <text x="28" y="528"><tspan fill="#79c0ff">[Iter 2/10]</tspan> Score: 52</text>
+    <text x="28" y="546"><tspan fill="#d2a8ff">[Mutate]</tspan> Generating 3 candidate diffs...</text>
+    <text x="28" y="564" fill="#8b949e">  [cand] fuzzy score=56 : concrete metric replaces "does a lot"</text>
+    <text x="28" y="582"><tspan fill="#3fb950" font-weight="bold">[KEEP]</tspan> pairwise: candidate wins 2-0 — proof beats adjectives <tspan fill="#3fb950">(52-&gt;56)</tspan></text>
+
+    <!-- iter 3 discard -->
+    <text x="28" y="612" fill="#30363d">══════════════════════════════════════════════════</text>
+    <text x="28" y="630"><tspan fill="#79c0ff">[Iter 3/10]</tspan> Score: 56</text>
+    <text x="28" y="648"><tspan fill="#f85149" font-weight="bold">[DISCARD]</tspan> pairwise: champion held. Longer ≠ better — reverted.</text>
+
+    <!-- done -->
+    <text x="28" y="678"><tspan fill="#3fb950" font-weight="bold">[DONE]</tspan> email: 48 → 56 <tspan fill="#3fb950">(delta: +8)</tspan>  <tspan fill="#8b949e">— каждый коммит в improve/email — проверенный выигрыш</tspan></text>
+  </g>
+</svg>
