@@ -18,7 +18,7 @@
 
 **A GAN-style self-improvement loop for any text artifact.** Point it at a file —
 **bring a rubric, or let auto-improve write one from the artifact.** It then mutates the
-file, grades each candidate with a **strict, independent judge model**, then filters them through a **debiased pairwise gate** (where candidate and champion are evaluated head-to-head in shuffled orderings to eliminate position bias). It keeps only the changes that genuinely win, and reverts the rest. By evaluating candidate mutations against this strict double-blind filter, auto-improve eliminates the "LLM slop" of unverified rewrites. The git history becomes the improvement log — every commit is a verified gain.
+file, grades each candidate with a **strict, independent judge model**, then filters them through a **debiased pairwise gate** (where candidate and champion are evaluated head-to-head in both orderings to cancel position bias). It keeps only the changes that genuinely win, and reverts the rest. By evaluating candidate mutations against this strict double-blind filter, auto-improve eliminates the "LLM slop" of unverified rewrites. The git history becomes the improvement log — every commit is a verified gain.
 
 Works on anything text: emails, landing pages, prompts, READMEs, API designs, configs,
 blog posts, cover letters. Don't have a rubric? Pass a one-line `--goal` (or nothing) and
@@ -44,7 +44,7 @@ and you can't tell if it actually got better. auto-improve fixes that with two r
 
 1. **A separate judge.** The model that *mutates* never *grades* — grading is a fresh
    call against your rubric, so it can't grade its own homework.
-2. **A pairwise keep/discard gate.** Each candidate is evaluated head-to-head against the current champion. To eliminate position bias (where LLMs favor the first option), the judge evaluates two shuffled prompts in parallel: `[Candidate, Champion]` and `[Champion, Candidate]`. A mutation is **kept only if it wins both evaluations** (a strict 2-0 sweep). Confident-but-worse rewrites get reverted, not shipped.
+2. **A pairwise keep/discard gate.** Each candidate is evaluated head-to-head against the current champion. To cancel position bias (where LLMs favor the first option), the judge evaluates both orderings: `[Candidate, Champion]` and `[Champion, Candidate]`. A mutation is **kept only when the candidate receives more votes than the champion** across those orderings; ties are discarded. Confident-but-worse rewrites get reverted, not shipped.
 
 The result is a monotonic climb you can trust — and a git branch where every commit is
 a real improvement, fully diffable.
