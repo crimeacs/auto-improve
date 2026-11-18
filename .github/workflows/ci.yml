@@ -8,7 +8,8 @@ on:
 
 jobs:
   python:
-    runs-on: ubuntu-latest
+    # ubuntu-latest moved to 26.04, where setup-python has no 3.9 build; 3.9 is still supported here.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
