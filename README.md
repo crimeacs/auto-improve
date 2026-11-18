@@ -149,6 +149,34 @@ The loop is more general than "improve one file":
 It won't take a weak idea "to the moon," but it reliably grinds down the obvious slop and
 the clearly-worse choices — automatically, and every step stays a verified gain.
 
+## Self-Improvement Memory (`--sim`)
+
+By default the mutator sees only the last few rows of `results/<tag>.tsv`. With
+`--sim FILE` it reads a **Self-Improvement Memory** instead, after *Self-Improvement
+Memory Enables Continual Recursive Self-Improvement* (Yu et al., arXiv 2611.18856):
+
+- Every evaluated best candidate is recorded under the **problem** it targeted (a rubric
+  dimension, or a weakness the mutator names). The record holds what changed, what the
+  mutator **predicted before scoring**, what was measured (that dimension's score change,
+  the overall change, the pairwise verdict), whether it was kept, and which artifact and
+  models produced it. Discarded attempts stay in the record.
+- The mutator gets the **whole** memory, grouped by problem, in place of the TSV excerpt.
+  Each candidate also names its `---PROBLEM---` and `---PREDICT---` (older replies without
+  them still parse).
+- The file is portable. Pass the same `--sim` file to a run on a different artifact or with
+  a different `IMPROVE_MUTATOR`, and the next run starts from what was already tried and
+  what happened. This is the paper's continual setting.
+
+```bash
+python3 improve.py --artifact examples/cold-email.txt --criteria criteria/cold-email-quality.md \
+  --tag email-a --sim results/email.sim.json
+python3 improve.py --artifact drafts/second-email.txt --criteria criteria/cold-email-quality.md \
+  --tag email-b --sim results/email.sim.json     # continues from the first run's memory
+```
+
+The paper's result is about harness optimizers on benchmarks. Treat it as a hypothesis
+here, and see the small study in `docs/sim-study.md` before relying on it.
+
 ## Bundled examples
 
 Runnable examples — point `--artifact`/`--criteria` at a pair and watch it climb:
