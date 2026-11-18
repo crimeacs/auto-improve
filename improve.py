@@ -616,6 +616,9 @@ def main():
     consecutive_discards = 0
     memory = sim_memory.load(args.sim) if args.sim else None
     meta_by_desc = {}
+    # The memory records MEASURED scores. current_score is the displayed score, which a
+    # keep advances by a fixed step, so it is not comparable with an evaluated new_score.
+    measured_score = baseline_score
 
     # ── The Loop (best-of-N candidates + pairwise keep/discard gate) ──
     for i in range(1, args.max_iterations + 1):
@@ -686,7 +689,7 @@ def main():
             meta = meta_by_desc.get(description, {})
             key = sim_memory.record(memory, problem=meta.get("problem") or "unspecified", what=description,
                                     predicted=meta.get("predicted"), before_breakdown=last_breakdown,
-                                    after_breakdown=new_breakdown, overall_before=current_score,
+                                    after_breakdown=new_breakdown, overall_before=measured_score,
                                     overall_after=new_score, pairwise=pw["overall"], kept=keep,
                                     context=sim_memory.context(rel_path, args.tag, i, MUTATOR_MODEL,
                                                                EVALUATOR_MODEL))
@@ -709,6 +712,7 @@ def main():
                         delta=shown_score - current_score, decision="keep",
                         artifact=rel_path, status="success")
             current_score = shown_score
+            measured_score = new_score
             artifact = new_content
             last_breakdown = new_breakdown
             consecutive_discards = 0
