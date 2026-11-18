@@ -20,6 +20,8 @@ import sys
 import time
 import unicodedata
 
+import sim_memory
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 RESULTS_DIR = os.environ.get("RESULTS_DIR") or os.path.join(SCRIPT_DIR, "results")
 
@@ -229,9 +231,19 @@ def evaluate(artifact_content, criteria_content, runs=2):
 # ── MUTATE (best-of-N) ──────────────────────────────────────────────────
 
 def mutate_candidates(artifact_content, criteria_content, eval_breakdown,
-                      results_history, n=3):
+                      results_history, n=3, memory_text=None):
     """Generate N distinct candidate mutations in ONE call. Returns a list of
-    (find, replace, description); [] on API/parse failure."""
+    (find, replace, description); [] on API/parse failure. With memory_text (the
+    Self-Improvement Memory), each tuple has a 4th item: {"problem", "predicted"}."""
+    if memory_text is not None:
+        history_block = ("## SELF-IMPROVEMENT MEMORY (every earlier attempt, grouped by problem, "
+                         "with what it predicted and what was measured)\n" + memory_text)
+        meta_format = ("---PROBLEM---\n<the rubric dimension (or weakness) this targets; reuse a name "
+                       "from the memory when it fits>\n---PREDICT---\n<before scoring: which dimension "
+                       "score should rise, and by roughly how much>\n")
+    else:
+        history_block = f"## PREVIOUS ATTEMPTS (do not repeat failed ideas)\n{results_history[:1000]}"
+        meta_format = ""
     prompt = f"""You are an expert improver. Read the EVALUATOR FEEDBACK and
 propose {n} DISTINCT, small, surgical find/replace mutations — each targeting a
 DIFFERENT weak dimension or element. Each must be a few lines, not a rewrite.
@@ -245,14 +257,13 @@ Output EXACTLY {n} candidates in this format (no prose between them):
 <replacement>
 ---DESCRIPTION---
 <one line: what changed, which dimension, why>
-===CANDIDATE 2===
+{meta_format}===CANDIDATE 2===
 ... (and so on through {n})
 
 ## EVALUATOR FEEDBACK (target the lowest scores)
 {eval_breakdown[:2000]}
 
-## PREVIOUS ATTEMPTS (do not repeat failed ideas)
-{results_history[:1000]}
+{history_block}
 
 ## CRITERIA SUMMARY
 {criteria_content[:1500]}
@@ -262,18 +273,29 @@ Output EXACTLY {n} candidates in this format (no prose between them):
     response = llm_call(prompt, temperature=0.9)  # higher temp -> diverse draws
     if not response:
         return []
-    return _parse_candidates(response.strip())
+    full = _parse_candidates_full(response.strip())
+    return full if memory_text is not None else [c[:3] for c in full]
 
 
 # The mutate-block delimiters. If one ends up inside a captured FIND or REPLACE, the
 # block was ambiguous (the model echoed a marker, or the artifact itself contains the
 # token) — splicing it would corrupt the file, so we drop that candidate.
-_DELIMS = ("---FIND---", "---REPLACE---", "---DESCRIPTION---", "===CANDIDATE")
+_DELIMS = ("---FIND---", "---REPLACE---", "---DESCRIPTION---", "---PROBLEM---", "---PREDICT---", "===CANDIDATE")
 
 
 def _parse_candidates(text):
     """Parse the ===CANDIDATE n=== blocks. Backward-compatible: a single
     un-delimited FIND/REPLACE block parses as one candidate."""
+    return [c[:3] for c in _parse_candidates_full(text)]
+
+
+def _section(block, name):
+    m = re.search(rf'---{name}---\s*\n(.*?)(?=\n---[A-Z]+---|\n===|\Z)', block, re.DOTALL)
+    return m.group(1).strip() if m else ""
+
+
+def _parse_candidates_full(text):
+    """Like _parse_candidates, plus {"problem", "predicted"} from the optional SIM sections."""
     out = []
     for block in re.split(r'===\s*CANDIDATE[^\n]*===', text):
         fm = re.search(r'---FIND---\s*\n(.*?)\n---REPLACE---', block, re.DOTALL)
@@ -284,7 +306,8 @@ def _parse_candidates(text):
             if any(d in find or d in replace for d in _DELIMS):
                 continue  # ambiguous block — never splice a delimiter into the artifact
             desc = dm.group(1).strip().split("\n")[0] if dm else "no description"
-            out.append((find, replace, desc))
+            out.append((find, replace, desc, {"problem": _section(block, "PROBLEM").split("\n")[0],
+                                               "predicted": _section(block, "PREDICT")}))
     return out
 
 
@@ -500,6 +523,10 @@ def main():
     parser.add_argument("--candidates", type=int, default=3,
                         help="candidate mutations generated per iteration (best-of-N)")
     parser.add_argument("--status", action="store_true")
+    parser.add_argument("--sim", metavar="FILE",
+                        help="Self-Improvement Memory file (arXiv 2611.18856). The mutator reads every "
+                             "earlier attempt, grouped by problem with predicted and measured outcomes, "
+                             "and each selected attempt is appended. Reuse the file across artifacts.")
     args = parser.parse_args()
 
     if args.status:
@@ -511,6 +538,8 @@ def main():
 
     artifact_path = os.path.abspath(args.artifact)
     criteria_path = os.path.abspath(args.criteria) if args.criteria else None
+    if args.sim:
+        args.sim = os.path.abspath(args.sim)   # resolved before chdir to the artifact's repo
     repo_root = os.path.dirname(artifact_path)
 
     # Walk up to find git root
@@ -585,6 +614,11 @@ def main():
     current_score = baseline_score
     last_breakdown = baseline_breakdown
     consecutive_discards = 0
+    memory = sim_memory.load(args.sim) if args.sim else None
+    meta_by_desc = {}
+    # The memory records MEASURED scores. current_score is the displayed score, which a
+    # keep advances by a fixed step, so it is not comparable with an evaluated new_score.
+    measured_score = baseline_score
 
     # ── The Loop (best-of-N candidates + pairwise keep/discard gate) ──
     for i in range(1, args.max_iterations + 1):
@@ -600,8 +634,11 @@ def main():
 
         # ── MUTATE (best-of-N, informed by evaluator) ──
         print(f"[Mutate] Generating {args.candidates} candidate diffs...")
+        memory_text = sim_memory.render(memory) if memory is not None else None
         cands = mutate_candidates(artifact, criteria, last_breakdown,
-                                  results_history, n=args.candidates)
+                                  results_history, n=args.candidates, memory_text=memory_text)
+        metas = [c[3] if len(c) > 3 else {} for c in cands]
+        cands = [c[:3] for c in cands]
         if not cands:
             print("[Mutate] FAILED: no candidates parsed/generated")
             log_result(results_file, i, "-------", current_score, 0, "crash",
@@ -617,12 +654,13 @@ def main():
         # The per-candidate evaluate() is an independent API call, so the N scores
         # run concurrently — N candidates cost ~1 eval of wall time, not N.
         applicable = []
-        for find_text, replace_text, description in cands:
+        for (find_text, replace_text, description), meta in zip(cands, metas):
             new_content, how = apply_diff(artifact, find_text, replace_text)
             if new_content is None:
                 print(f"  [skip] candidate didn't apply ({how}): {description[:60]}")
                 continue
             applicable.append((new_content, how, description))
+            meta_by_desc[description] = meta
 
         if not applicable:
             print("[Apply] No candidate applied cleanly.")
@@ -647,6 +685,16 @@ def main():
         #   artifact == current champion; new_content == best candidate.
         pw = pairwise_text_eval(artifact, new_content, criteria)
         keep = pw["overall"] == "keep_challenger"
+        if memory is not None:
+            meta = meta_by_desc.get(description, {})
+            key = sim_memory.record(memory, problem=meta.get("problem") or "unspecified", what=description,
+                                    predicted=meta.get("predicted"), before_breakdown=last_breakdown,
+                                    after_breakdown=new_breakdown, overall_before=measured_score,
+                                    overall_after=new_score, pairwise=pw["overall"], kept=keep,
+                                    context=sim_memory.context(rel_path, args.tag, i, MUTATOR_MODEL,
+                                                               EVALUATOR_MODEL))
+            sim_memory.save(memory, args.sim)
+            print(f"  [sim] recorded under '{key}'")
 
         if keep:
             # commit only the winner; shown score climbs monotonically (chart contract)
@@ -664,6 +712,7 @@ def main():
                         delta=shown_score - current_score, decision="keep",
                         artifact=rel_path, status="success")
             current_score = shown_score
+            measured_score = new_score
             artifact = new_content
             last_breakdown = new_breakdown
             consecutive_discards = 0

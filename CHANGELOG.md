@@ -10,6 +10,13 @@ this file is the improvement log for the loop itself.
 
 ## [Unreleased]
 
+### Added
+- `--sim FILE`: Self-Improvement Memory (arXiv 2611.18856). The mutator reads every earlier
+  attempt grouped by problem, with predicted and measured outcomes, instead of the last TSV
+  rows. Each evaluated best candidate is appended, kept or not, with artifact and model
+  provenance, and the file can be carried across artifacts and models. Candidates may add
+  `---PROBLEM---` and `---PREDICT---` sections; older replies still parse.
+
 ## [0.1.0] — 2026-06-01
 
 First public release. A GAN-style self-improvement loop for any text artifact:
