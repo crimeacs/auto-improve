@@ -1,0 +1,50 @@
+{
+ "design": {
+  "iterations": 6,
+  "candidates": 3,
+  "eval_runs": 1,
+  "pairs": 4,
+  "mutator": "gemini-flash-latest",
+  "evaluator": "gemini-flash-latest"
+ },
+ "target_baseline": 21,
+ "known_bad_probe": 5,
+ "pairs": [
+  {
+   "pair": 1,
+   "votes_nosim": 2,
+   "votes_sim": 0,
+   "score_nosim": 92,
+   "score_sim": 92,
+   "source_memory_attempts": 6,
+   "source_memory_problems": 5
+  },
+  {
+   "pair": 2,
+   "votes_nosim": 1,
+   "votes_sim": 1,
+   "score_nosim": 92,
+   "score_sim": 89,
+   "source_memory_attempts": 6,
+   "source_memory_problems": 4
+  },
+  {
+   "pair": 3,
+   "votes_nosim": 0,
+   "votes_sim": 2,
+   "score_nosim": 86,
+   "score_sim": 92,
+   "source_memory_attempts": 6,
+   "source_memory_problems": 4
+  },
+  {
+   "pair": 4,
+   "votes_nosim": 0,
+   "votes_sim": 2,
+   "score_nosim": 89,
+   "score_sim": 91,
+   "source_memory_attempts": 6,
+   "source_memory_problems": 4
+  }
+ ]
+}

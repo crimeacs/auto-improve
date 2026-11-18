@@ -1,0 +1,131 @@
+{
+ "version": "auto-improve-sim.v1",
+ "problems": {
+  "concrete-value": {
+   "name": "Concrete value",
+   "opened": "2026-11-18T03:53:07+00:00",
+   "attempts": [
+    {
+     "what": "Replace vague \"AI tool that does a lot of things\" with a specific use case, named pain, and concrete before/after metric.",
+     "predicted": "Concrete value score should rise from 2/25 to around 18/25 (+16 points).",
+     "observed": {
+      "dimension_delta": 21,
+      "overall_delta": 30,
+      "pairwise": "keep_challenger"
+     },
+     "kept": true,
+     "artifact": "artifact.txt",
+     "tag": "src1",
+     "iteration": 1,
+     "mutator": "gemini-flash-latest",
+     "evaluator": "gemini-flash-latest",
+     "at": "2026-11-18T03:53:07+00:00"
+    }
+   ]
+  },
+  "hook-relevance": {
+   "name": "Hook & relevance",
+   "opened": "2026-11-18T03:53:24+00:00",
+   "attempts": [
+    {
+     "what": "Replace generic throat-clearing greeting and opening with a personalized, relevant hook acknowledging a recent milestone.",
+     "predicted": "Hook & relevance score should rise from 6/30 to roughly 24/30 (+18 points).",
+     "observed": {
+      "dimension_delta": 17,
+      "overall_delta": 20,
+      "pairwise": "keep_challenger"
+     },
+     "kept": true,
+     "artifact": "artifact.txt",
+     "tag": "src1",
+     "iteration": 2,
+     "mutator": "gemini-flash-latest",
+     "evaluator": "gemini-flash-latest",
+     "at": "2026-11-18T03:53:24+00:00"
+    },
+    {
+     "what": "Connect the API launch directly to breaking PR bottlenecks and drop standard congratulatory filler.",
+     "predicted": "Hook & relevance score should rise from 26/30 to 29/30 (+3 points); Voice from 7/10 to 9/10 (+2 points).",
+     "observed": {
+      "dimension_delta": 2,
+      "overall_delta": 5,
+      "pairwise": "keep_challenger"
+     },
+     "kept": true,
+     "artifact": "artifact.txt",
+     "tag": "src1",
+     "iteration": 5,
+     "mutator": "gemini-flash-latest",
+     "evaluator": "gemini-flash-latest",
+     "at": "2026-11-18T03:54:11+00:00"
+    }
+   ]
+  },
+  "call-to-action": {
+   "name": "Call to action",
+   "opened": "2026-11-18T03:53:38+00:00",
+   "attempts": [
+    {
+     "what": "Replace the high-friction meeting request and vague scheduling phrase with a low-friction, interest-based CTA.",
+     "predicted": "Call to action should rise from 4/15 to around 13/15 (+9 points).",
+     "observed": {
+      "dimension_delta": 10,
+      "overall_delta": 14,
+      "pairwise": "keep_challenger"
+     },
+     "kept": true,
+     "artifact": "artifact.txt",
+     "tag": "src1",
+     "iteration": 3,
+     "mutator": "gemini-flash-latest",
+     "evaluator": "gemini-flash-latest",
+     "at": "2026-11-18T03:53:38+00:00"
+    }
+   ]
+  },
+  "voice": {
+   "name": "Voice",
+   "opened": "2026-11-18T03:53:54+00:00",
+   "attempts": [
+    {
+     "what": "Replace the obsequious \"Thanks so much!\" sign-off with a clean, confident signature.",
+     "predicted": "Voice score should rise from -1/10 to around 9/10 (+10 points).",
+     "observed": {
+      "dimension_delta": 8,
+      "overall_delta": 6,
+      "pairwise": "keep_challenger"
+     },
+     "kept": true,
+     "artifact": "artifact.txt",
+     "tag": "src1",
+     "iteration": 4,
+     "mutator": "gemini-flash-latest",
+     "evaluator": "gemini-flash-latest",
+     "at": "2026-11-18T03:53:54+00:00"
+    }
+   ]
+  },
+  "brevity-clarity": {
+   "name": "Brevity & clarity",
+   "opened": "2026-11-18T03:54:27+00:00",
+   "attempts": [
+    {
+     "what": "Split the opening compound sentence into two crisp sentences and specify schema changes to sharpen the hook and pace.",
+     "predicted": "Brevity & clarity score should rise from 19/20 to 20/20 (+1 point); Hook & relevance from 28/30 to 29/30 (+1 point).",
+     "observed": {
+      "dimension_delta": 0,
+      "overall_delta": -1,
+      "pairwise": "keep_challenger"
+     },
+     "kept": true,
+     "artifact": "artifact.txt",
+     "tag": "src1",
+     "iteration": 6,
+     "mutator": "gemini-flash-latest",
+     "evaluator": "gemini-flash-latest",
+     "at": "2026-11-18T03:54:27+00:00"
+    }
+   ]
+  }
+ }
+}
